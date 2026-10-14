@@ -1,0 +1,132 @@
+{
+  "downloadedAt": "2026-10-13",
+  "characters": [
+    {
+      "project": "LoveLive!",
+      "character": "高坂穗乃果",
+      "file": "assets/ppt/characters/lovelive-honoka-fullbody.png",
+      "page": "https://llwiki.org/zh/高坂穗乃果",
+      "image": "https://llwiki.org/mediawiki/img_auth.php/a/ad/Honoka_img.png",
+      "sha256": "c2191142238294ec3f203045a7452ac8f31718b00efb2308025660f18a20f616",
+      "layout": {
+        "id": "lovelive-honoka",
+        "url": "/assets/ppt/characters/lovelive-honoka-fullbody.png",
+        "name": "LoveLive! · 高坂穗乃果",
+        "x": 24,
+        "y": 91,
+        "width": 14.5,
+        "layer": "behind",
+        "flipped": false
+      },
+      "sourceNote": "LLWiki 收录的全身立绘；保留原始图片及透明通道。原官方半身图仍保留在 lovelive-honoka.png。"
+    },
+    {
+      "project": "BanG Dream!",
+      "character": "户山香澄",
+      "file": "assets/ppt/characters/bandori-kasumi.png",
+      "page": "https://bang-dream.bushimo.jp/character/poppinparty/toyama-kasumi/",
+      "image": "https://bang-dream.bushimo.jp/wordpress/wp-content/themes/bang-dream_gbp_v2/assets/images/common/character/poppinparty/s3/img_toyama-kasumi_1.png",
+      "sha256": "eee39dd9bd0921b3a7cd9119b6e1acb4257a7d68383e318c1567af2b238412c2",
+      "layout": {
+        "id": "bandori-kasumi",
+        "url": "/assets/ppt/characters/bandori-kasumi.png",
+        "name": "BanG Dream! · 户山香澄",
+        "x": 38.5,
+        "y": 94,
+        "width": 26,
+        "layer": "behind",
+        "flipped": false
+      }
+    },
+    {
+      "project": "偶像大师",
+      "character": "天海春香",
+      "file": "assets/ppt/characters/idolmaster-haruka.png",
+      "page": "https://adm-millionlive-anime.idolmaster-official.jp/character/",
+      "image": "https://millionlive-anime.idolmaster-official.jp/Is370IbVyq/wp-content/themes/ani-million-v2/assets/character/haruka/character.png",
+      "sha256": "b3a961bd69595dc5a55b5659ec271c86f4a05c45a077a73c0a8462668225d7be",
+      "layout": {
+        "id": "idolmaster-haruka",
+        "url": "/assets/ppt/characters/idolmaster-haruka.png",
+        "name": "偶像大师 · 天海春香",
+        "x": 11,
+        "y": 90,
+        "width": 19.2,
+        "layer": "behind",
+        "flipped": false
+      }
+    },
+    {
+      "project": "世界计划",
+      "character": "初音未来",
+      "file": "assets/ppt/characters/pjsekai-miku.png",
+      "page": "https://www.colorfulstage.com/characters/virtualsinger/miku/",
+      "image": "https://www.colorfulstage.com/img/v_01_HatsuneMiku.png",
+      "sha256": "11c12d20811b5f9d4f5b10834b805e69c55681e3d6d81b1970b0687445eeb017",
+      "layout": {
+        "id": "pjsekai-miku",
+        "url": "/assets/ppt/characters/pjsekai-miku.png",
+        "name": "世界计划 · 初音未来",
+        "x": 53,
+        "y": 90,
+        "width": 26,
+        "layer": "behind",
+        "flipped": false
+      }
+    },
+    {
+      "project": "少女☆歌剧",
+      "character": "爱城华恋",
+      "file": "assets/ppt/characters/starlight-karen.png",
+      "page": "https://revuestarlight.bushimo.jp/character/karen/",
+      "image": "https://revuestarlight.bushimo.jp/wp-content/themes/revuestarlight/assets/images/pc/character/img-seisho-karen-full.png",
+      "sha256": "aa932674e2a070078425986a87cc4135f485827df1b36e3a6ddc117bb7dc7889",
+      "layout": {
+        "id": "starlight-karen",
+        "url": "/assets/ppt/characters/starlight-karen.png",
+        "name": "少女☆歌剧 · 爱城华恋",
+        "x": 70,
+        "y": 90,
+        "width": 17.5,
+        "layer": "behind",
+        "flipped": false
+      }
+    },
+    {
+      "project": "D4DJ",
+      "character": "爱本铃玖",
+      "file": "assets/ppt/characters/d4dj-rinku.png",
+      "page": "https://d4dj-groovymix.jp/unit/aimoto-rinku/",
+      "image": "https://d4dj-groovymix.jp/wordpress/wp-content/themes/d4dj/assets/images/common/unit/aimoto-rinku/img.png",
+      "sha256": "79e9818a1190154a2a31b86cc0e9e5101ffc6e8cf0934b8f20a2ecf73bccd56c",
+      "layout": {
+        "id": "d4dj-rinku",
+        "url": "/assets/ppt/characters/d4dj-rinku.png",
+        "name": "D4DJ · 爱本铃玖",
+        "x": 82.5,
+        "y": 90,
+        "width": 13.8,
+        "layer": "behind",
+        "flipped": false
+      }
+    },
+    {
+      "project": "Girls Band Cry",
+      "character": "井芹仁菜",
+      "file": "assets/ppt/characters/gbc-nina.png",
+      "page": "https://girls-band-cry.com/character/nina/",
+      "image": "https://girls-band-cry.com/wp-content/themes/gbc_v1-1/assets/images/common/character/img_body-nina.png",
+      "sha256": "b8c70c01406d2f5762e5beb8d093b5b4041832d429e686b34128624cd9235e43",
+      "layout": {
+        "id": "gbc-nina",
+        "url": "/assets/ppt/characters/gbc-nina.png",
+        "name": "Girls Band Cry · 井芹仁菜",
+        "x": 93,
+        "y": 90.5,
+        "width": 12.4,
+        "layer": "behind",
+        "flipped": false
+      }
+    }
+  ]
+}
