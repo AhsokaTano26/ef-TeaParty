@@ -1,0 +1,30 @@
+.DS_Store
+.idea/
+*.tsbuildinfo
+__pycache__/
+*.pyc
+node_modules/
+web/dist/
+data/
+bin/
+*.log
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
+
+# Local activity state, question banks, uploads and source material.
+/assets/
+/tmp/
+/参考资料/
+/backups/
+/uploads/
+/media/
+*.sqlite
+*.sqlite3
+*.db
+
+# Activity-specific extraction tooling and generated reports.
+/scripts/import_pptx.py
+/docs/import-report.md
