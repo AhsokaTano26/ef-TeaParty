@@ -1,0 +1,481 @@
+.opening-stage .stage-top,
+.opening-stage .stage-bottom {
+  z-index: 2;
+}
+.opening-stage .stage-scores,
+.opening-stage .stage-timer {
+  color: #fff9ed;
+  text-shadow: 0 1px 8px #132334;
+}
+.logo-opening {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  overflow: hidden;
+  pointer-events: none;
+  color: #fff9ed;
+  --opening-gold: #f4c478;
+  --opening-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --opening-move: cubic-bezier(0.76, 0, 0.24, 1);
+}
+.opening-atmosphere {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, #101c2bf5 0%, #142337ec 58%, #24394bdb 100%);
+}
+.opening-atmosphere::after {
+  content: '';
+  position: absolute;
+  inset: 8% 0 15%;
+  opacity: 0.16;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 8cqw,
+    #f4c47866 8cqw calc(8cqw + 1px),
+    transparent calc(8cqw + 1px) 16cqw
+  );
+}
+.opening-edge {
+  position: absolute;
+  left: 3.5%;
+  right: 3.5%;
+  height: 1px;
+  background: #e8d2aa50;
+  transform-origin: left;
+  animation: opening-edge-in 900ms var(--opening-ease) both;
+  animation-delay: var(--opening-elapsed, 0ms);
+}
+.opening-edge-top {
+  top: 13%;
+}
+.opening-edge-bottom {
+  bottom: 16%;
+}
+.opening-masthead {
+  position: absolute;
+  top: 8.2%;
+  left: 4%;
+  right: 4%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88cqw;
+  letter-spacing: 0.2em;
+  color: #ddd6c8;
+}
+.opening-masthead > span:first-child {
+  font-weight: 750;
+  color: var(--opening-gold);
+}
+.opening-masthead > span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 1.2cqw;
+}
+.opening-masthead i {
+  width: 0.3cqw;
+  height: 0.3cqw;
+  background: var(--opening-gold);
+  border-radius: 50%;
+}
+.opening-solo {
+  position: absolute;
+  inset: 14% 0 17%;
+  opacity: 0;
+  animation: opening-solo-window 2100ms linear both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + var(--cue-start));
+}
+.opening-solo-ribbon {
+  position: absolute;
+  top: -35%;
+  left: 53%;
+  width: 35%;
+  height: 170%;
+  background: var(--mark-color);
+  opacity: 0.11;
+  transform: skewX(-20deg);
+  animation: opening-ribbon-pass 2100ms var(--opening-ease) both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + var(--cue-start));
+}
+.opening-solo-counter {
+  position: absolute;
+  right: 3%;
+  top: -14%;
+  font:
+    900 29cqw/1 Arial,
+    sans-serif;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--mark-color) 24%, transparent);
+  letter-spacing: -0.08em;
+}
+.opening-solo-copy {
+  position: absolute;
+  left: 7%;
+  top: 16%;
+  width: 39%;
+  animation: opening-copy-cue 2100ms var(--opening-ease) both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + var(--cue-start));
+}
+.opening-solo-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 1cqw;
+  font-size: 1cqw;
+  font-weight: 650;
+  letter-spacing: 0.15em;
+  color: var(--mark-color);
+}
+.opening-solo-eyebrow i {
+  width: 2.7cqw;
+  height: 1px;
+  background: currentColor;
+}
+.opening-solo-copy strong {
+  display: block;
+  margin-top: 1.5cqw;
+  font:
+    850 7.2cqw/0.99 'Arial Black',
+    'PingFang SC',
+    'Microsoft YaHei',
+    sans-serif;
+  letter-spacing: -0.045em;
+}
+.opening-solo-copy strong span {
+  display: block;
+}
+.opening-solo-copy strong span:last-child {
+  color: var(--mark-color);
+  margin-top: 0.35cqw;
+}
+.opening-solo-caption {
+  display: block;
+  margin-top: 2.1cqw;
+  font-size: 1.2cqw;
+  letter-spacing: 0.28em;
+  color: #eee4d6;
+}
+.opening-solo-mark {
+  position: absolute;
+  left: 53%;
+  top: 50%;
+  width: 33cqw;
+  height: 33cqw;
+  filter: drop-shadow(0 1.5cqw 1.2cqw #070d1a60);
+  animation: opening-mark-cue 2100ms var(--opening-ease) both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + var(--cue-start));
+}
+.opening-solo-mark img,
+.opening-solo-mark svg,
+.opening-member-mark img,
+.opening-member-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.opening-solo-orbit {
+  position: absolute;
+  left: 69.5%;
+  top: 50%;
+  width: 36cqw;
+  height: 36cqw;
+  border: 1px solid color-mix(in srgb, var(--mark-color) 70%, transparent);
+  border-radius: 50%;
+  animation: opening-ring-cue 2100ms var(--opening-ease) both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + var(--cue-start));
+}
+.opening-solo-streak {
+  position: absolute;
+  left: -20%;
+  top: 50%;
+  width: 110%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0 20%,
+    var(--mark-color) 55%,
+    #fff5d5 80%,
+    transparent
+  );
+  animation: opening-streak-cue 2100ms var(--opening-ease) both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + var(--cue-start));
+}
+.opening-final {
+  position: absolute;
+  inset: 15% 0 17%;
+  animation: opening-final-in 650ms var(--opening-ease) both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + 7550ms);
+}
+.opening-final-ghost {
+  position: absolute;
+  top: 27%;
+  width: 100%;
+  text-align: center;
+  font:
+    900 15.6cqw/1 Arial,
+    sans-serif;
+  letter-spacing: -0.065em;
+  color: #f3d6a90a;
+  -webkit-text-stroke: 1px #f3d6a91c;
+}
+.opening-final-heading {
+  position: absolute;
+  top: 2%;
+  left: 5%;
+  right: 5%;
+  text-align: center;
+}
+.opening-event {
+  font-size: 1.05cqw;
+  letter-spacing: 0.32em;
+  color: var(--opening-gold);
+}
+.stage .opening-final-heading h1 {
+  display: block;
+  margin: 0.55cqw 0 0.4cqw;
+  line-height: 1.15;
+  letter-spacing: 0.055em;
+  color: #fff9ed;
+  max-height: 12cqw;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.opening-final-heading p {
+  margin: 0;
+  font-size: 1.15cqw;
+  color: #d0d5db;
+  line-height: 1.5;
+  white-space: pre-line;
+  max-height: 3.5cqw;
+  overflow: hidden;
+}
+.opening-ensemble {
+  position: absolute;
+  top: 32%;
+  left: 5.5%;
+  right: 5.5%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 3cqw;
+}
+.opening-member {
+  position: relative;
+  text-align: center;
+  animation: opening-member-arrive 1100ms var(--opening-ease) both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + 7650ms + var(--member-index) * 130ms);
+}
+.opening-member-mark {
+  width: 20cqw;
+  height: 20cqw;
+  max-width: 100%;
+  margin: 0 auto;
+  filter: drop-shadow(0 0.9cqw 1cqw #070d1a50);
+}
+.opening-member-name {
+  display: block;
+  margin-top: 1cqw;
+  color: #fff9ed;
+  font-size: 1.5cqw;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.opening-member-number {
+  display: block;
+  margin-top: 0.45cqw;
+  font-size: 0.75cqw;
+  letter-spacing: 0.22em;
+  color: var(--mark-color);
+}
+.opening-final-caption {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5cqw;
+  font-size: 1.1cqw;
+  letter-spacing: 0.22em;
+  color: #ead5b3;
+}
+.opening-final-caption span {
+  width: 12cqw;
+  height: 1px;
+  background: #ead5b340;
+}
+.opening-cue-track {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  bottom: 19%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.4cqw;
+  animation: opening-track-leave 250ms linear both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + 7350ms);
+}
+.opening-cue-track > div {
+  position: relative;
+  padding-bottom: 0.8cqw;
+  overflow: hidden;
+  border-bottom: 1px solid #ffffff26;
+}
+.opening-cue-track span {
+  color: #d2d7df;
+  font-size: 0.83cqw;
+  letter-spacing: 0.08em;
+}
+.opening-cue-track i {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--mark-color);
+  transform-origin: left;
+  animation: opening-edge-in 1800ms linear both;
+  animation-delay: calc(var(--opening-elapsed, 0ms) + var(--cue-start));
+}
+.opening-toolbar {
+  justify-content: space-between;
+}
+.opening-toolbar > span {
+  font-size: 12px;
+  color: var(--muted, #66768a);
+}
+@keyframes opening-edge-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes opening-solo-window {
+  0% {
+    opacity: 0;
+  }
+  5%,
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes opening-ribbon-pass {
+  0% {
+    transform: translateX(90%) skewX(-20deg);
+  }
+  23%,
+  80% {
+    transform: translateX(0) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(-30%) skewX(-20deg);
+  }
+}
+@keyframes opening-copy-cue {
+  0% {
+    opacity: 0;
+    transform: translateX(-6cqw);
+  }
+  20%,
+  79% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-2cqw);
+  }
+}
+@keyframes opening-mark-cue {
+  0% {
+    opacity: 0;
+    transform: translate(12cqw, -50%) scale(1.12) rotate(9deg);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(0, -50%) scale(1) rotate(-2deg);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(0, -50%) scale(1.025) rotate(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-2cqw, -50%) scale(0.96) rotate(-3deg);
+  }
+}
+@keyframes opening-ring-cue {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  28% {
+    opacity: 0.85;
+  }
+  75%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+@keyframes opening-streak-cue {
+  0% {
+    opacity: 0;
+    transform: translateX(-80%) rotate(-17deg);
+  }
+  9% {
+    opacity: 0.85;
+  }
+  26%,
+  100% {
+    opacity: 0;
+    transform: translateX(50%) rotate(-17deg);
+  }
+}
+@keyframes opening-final-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes opening-member-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(5cqw) scale(1.14) rotate(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0);
+  }
+}
+@keyframes opening-track-leave {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-opening *,
+  .logo-opening *::before,
+  .logo-opening *::after {
+    animation: none !important;
+  }
+  .opening-solo,
+  .opening-cue-track {
+    display: none;
+  }
+  .opening-final,
+  .opening-member {
+    opacity: 1;
+    transform: none;
+  }
+}

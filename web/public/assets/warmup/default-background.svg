@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" fill="none">
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="1920" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#253951"/><stop offset=".42" stop-color="#1b2a42"/><stop offset="1" stop-color="#101c31"/>
+    </linearGradient>
+    <radialGradient id="halo"><stop stop-color="#cedbd1" stop-opacity=".3"/><stop offset="1" stop-color="#b3cbd3" stop-opacity="0"/></radialGradient>
+    <linearGradient id="silk" x1="-240" y1="856" x2="2050" y2="574" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#adc1d9" stop-opacity=".03"/><stop offset=".24" stop-color="#b1c7cb" stop-opacity=".18"/><stop offset=".6" stop-color="#aaa8c5" stop-opacity=".12"/><stop offset="1" stop-color="#e1b69c" stop-opacity=".14"/>
+    </linearGradient>
+    <radialGradient id="warm"><stop stop-color="#ddb294" stop-opacity=".22"/><stop offset="1" stop-color="#ddb294" stop-opacity="0"/></radialGradient>
+    <g id="star"><path d="M0-7V7M-7 0H7" stroke="#f2e4c9" stroke-width="1.2"/><path d="M-3-3L3 3M-3 3L3-3" stroke="#f2e4c9" stroke-width=".6"/></g>
+  </defs>
+  <path fill="url(#night)" d="M0 0H1920V1080H0Z"/>
+  <ellipse cx="410" cy="420" rx="660" ry="600" fill="url(#halo)"/>
+  <ellipse cx="1860" cy="1010" rx="770" ry="600" fill="url(#warm)"/>
+  <g stroke="#dce2df" opacity=".12"><circle cx="410" cy="462" r="352"/><circle cx="410" cy="462" r="375"/><circle cx="410" cy="462" r="403" stroke-dasharray="1 18"/><path d="M48 462H90M730 462H773M410 96V138M410 786V828"/></g>
+  <path d="M-103 862C282 566 421 1046 1010 864S1598 435 2013 665L1993 892C1563 688 1359 999 1004 1065S184 773-43 1052Z" fill="url(#silk)"/>
+  <path d="M-50 983C291 633 515 1082 1035 908S1692 632 1965 850" stroke="#d6d6cb" stroke-opacity=".23"/>
+  <path d="M-50 1000C290 674 482 1112 1054 929S1703 640 1969 867" stroke="#bdcbd7" stroke-opacity=".12"/>
+  <path d="M1185-53C1322 97 1505 73 1716 43S1877 151 1972 153" stroke="#d9d9cb" stroke-opacity=".13"/>
+  <g opacity=".63"><use href="#star" x="92" y="163"/><use href="#star" x="715" y="174"/><use href="#star" x="1232" y="111"/><use href="#star" x="1804" y="255"/><use href="#star" x="1632" y="864"/><use href="#star" x="225" y="886"/><use href="#star" x="943" y="972"/></g>
+  <g fill="#e4dccb" opacity=".5">
+    <circle cx="177" cy="112" r="1.8"/><circle cx="555" cy="146" r="1.6"/><circle cx="820" cy="94" r="1.3"/><circle cx="971" cy="154" r="2"/><circle cx="1474" cy="172" r="1.3"/><circle cx="1776" cy="76" r="2"/>
+    <circle cx="56" cy="677" r="1.4"/><circle cx="121" cy="502" r="1"/><circle cx="1786" cy="522" r="1.8"/><circle cx="1851" cy="746" r="1.5"/><circle cx="1554" cy="944" r="2"/><circle cx="567" cy="976" r="1.5"/>
+    <circle cx="113" cy="1022" r="1.2"/><circle cx="331" cy="970" r="1.2"/><circle cx="1761" cy="995" r="1.2"/><circle cx="878" cy="854" r="1.2"/><circle cx="1299" cy="960" r="1.2"/>
+  </g>
+  <g stroke="#e7dfcb" stroke-opacity=".18"><path d="M58 58H144M58 58V134M1862 58H1776M1862 58V134M58 1022H144M58 1022V946M1862 1022H1776M1862 1022V946"/></g>
+</svg>

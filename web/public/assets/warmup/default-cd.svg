@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none">
+  <defs>
+    <linearGradient id="foil" x1="94" y1="38" x2="898" y2="960" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f5edd9"/><stop offset=".24" stop-color="#9baabf"/><stop offset=".43" stop-color="#e2eef1"/><stop offset=".63" stop-color="#9a94ab"/><stop offset=".82" stop-color="#cad8df"/><stop offset="1" stop-color="#edd8c1"/>
+    </linearGradient>
+    <linearGradient id="night" x1="288" y1="64" x2="720" y2="924" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2c3f62"/><stop offset=".54" stop-color="#718ba2"/><stop offset="1" stop-color="#303d59"/>
+    </linearGradient>
+    <linearGradient id="ribbon" x1="116" y1="700" x2="939" y2="309" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c9dedb" stop-opacity=".12"/><stop offset=".5" stop-color="#ecdfce" stop-opacity=".64"/><stop offset="1" stop-color="#d3daeb" stop-opacity=".06"/>
+    </linearGradient>
+    <clipPath id="disc"><circle cx="512" cy="512" r="478"/></clipPath>
+    <path id="top-arc" d="M 143 512 A 369 369 0 0 1 881 512"/>
+    <path id="lower-arc" d="M 143 530 A 369 369 0 0 0 881 530"/>
+    <g id="star"><path d="M0-11V11M-11 0H11M-5-5L5 5M-5 5L5-5" stroke="#fff3d7" stroke-width="1.4"/></g>
+  </defs>
+  <circle cx="512" cy="512" r="512" fill="url(#foil)"/>
+  <circle cx="512" cy="512" r="478" fill="url(#night)"/>
+  <g clip-path="url(#disc)">
+    <path d="M-80 680C151 378 332 797 681 556S982 165 1114 236L1126 353C940 296 850 572 617 667S148 493-28 816Z" fill="url(#ribbon)"/>
+    <path d="M-46 766C196 489 305 888 714 642S915 186 1089 285" stroke="#ede3d0" stroke-opacity=".54" stroke-width="2"/>
+    <path d="M-2 789C269 500 386 924 755 645S907 179 1074 319" stroke="#d0e6ed" stroke-opacity=".32"/>
+    <path d="M177 182C310 42 639 38 829 222" stroke="#d7e4e9" stroke-opacity=".25" stroke-width="28"/>
+    <g opacity=".7"><use href="#star" x="224" y="353"/><use href="#star" x="791" y="395"/><use href="#star" x="319" y="705"/><use href="#star" x="768" y="662"/><use href="#star" x="628" y="239"/></g>
+    <g fill="#edf2e5" opacity=".6"><circle cx="348" cy="251" r="2"/><circle cx="706" cy="318" r="3"/><circle cx="802" cy="551" r="2"/><circle cx="241" cy="601" r="3"/><circle cx="622" cy="773" r="3"/><circle cx="465" cy="830" r="2"/><circle cx="487" cy="181" r="2"/><circle cx="356" cy="805" r="1.5"/><circle cx="163" cy="441" r="2"/></g>
+  </g>
+  <g stroke="#e8e7db"><circle cx="512" cy="512" r="461" stroke-opacity=".64"/><circle cx="512" cy="512" r="443" stroke-opacity=".2"/><circle cx="512" cy="512" r="402" stroke-opacity=".17"/><circle cx="512" cy="512" r="488" stroke-opacity=".76"/></g>
+  <g fill="#f6ebd6" font-family="Arial, sans-serif" text-anchor="middle">
+    <text font-size="17" letter-spacing="6"><textPath href="#top-arc" startOffset="50%">CQU OUYAN · WINTER TEA PARTY</textPath></text>
+    <text font-size="15" letter-spacing="5"><textPath href="#lower-arc" startOffset="50%">A LITTLE MUSIC · A WARM GATHERING</textPath></text>
+    <text x="512" y="277" font-size="13" letter-spacing="7">WINTER SESSION</text>
+  </g>
+  <text x="512" y="369" fill="#fff5e3" text-anchor="middle" font-family="Songti SC, Noto Serif CJK SC, serif" font-size="67" letter-spacing="12">冬日旋律</text>
+  <path d="M430 397H594" stroke="#f6ebd6" stroke-opacity=".7"/>
+  <text x="512" y="723" fill="#fff3dc" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" letter-spacing="8">SIDE A</text>
+  <text x="512" y="755" fill="#e1e8e4" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14" letter-spacing="5">重庆大学 · 偶像研究部</text>
+  <circle cx="512" cy="512" r="129" fill="url(#foil)" fill-opacity=".88"/>
+  <circle cx="512" cy="512" r="116" stroke="#f9f2e3" stroke-opacity=".8"/>
+  <circle cx="512" cy="512" r="83" fill="#43516b"/>
+  <circle cx="512" cy="512" r="59" fill="#222e43" stroke="#e5ded0" stroke-width="3"/>
+</svg>

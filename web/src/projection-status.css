@@ -1,0 +1,91 @@
+.projection-status-panel {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #eadfe1);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.projection-status-panel .panel-title {
+  margin-bottom: 12px;
+}
+.projection-status-panel .panel-title h2 {
+  font-size: 15px;
+}
+.projection-status-panel .panel-title > small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.projection-client + .projection-client {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.projection-client-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.projection-client-heading strong {
+  font-size: 12px;
+}
+.projection-client-heading > small {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+}
+.projection-status-badge {
+  font-size: 11px;
+  color: var(--navy);
+  background: var(--paper-soft);
+  border-radius: var(--radius);
+  padding: 2px 6px;
+}
+.is-online .projection-status-badge {
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 10%, transparent);
+}
+.is-offline .projection-status-badge,
+.is-unknown .projection-status-badge {
+  color: var(--muted);
+  background: var(--paper-soft);
+}
+.projection-client dl {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 12px;
+}
+.projection-client dl > div {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 8px;
+}
+.projection-client dt {
+  color: var(--muted);
+}
+.projection-client dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.projection-client dd small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.projection-client dd .projection-drift-warning {
+  color: var(--danger);
+}
+.projection-status-warning {
+  color: var(--danger);
+  margin: 7px 0;
+  font-size: 11px;
+}
+.projection-status-empty,
+.projection-status-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 10px 0 0;
+}
+.projection-status-empty {
+  font-size: 12px;
+}

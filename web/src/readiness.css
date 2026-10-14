@@ -1,0 +1,192 @@
+.upload-center {
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  width: min(380px, calc(100vw - 32px));
+  max-height: calc(100dvh - 100px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.upload-panel {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  background: var(--surface, #fff);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 40px #24436726;
+  overflow: hidden;
+  min-height: 0;
+  pointer-events: auto;
+}
+.upload-completed-list {
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+  max-height: 40dvh;
+  overflow-y: auto;
+  flex-shrink: 0;
+  pointer-events: auto;
+}
+.upload-completed-notice {
+  width: 100%;
+}
+.upload-center-title {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.upload-center-title small {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+}
+.upload-job-list {
+  min-height: 0;
+  max-height: 45vh;
+  overflow-y: auto;
+}
+.upload-job {
+  padding: 10px 16px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.upload-job:last-child {
+  border-bottom: none;
+}
+.upload-job-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.upload-job-heading strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+.upload-job progress {
+  display: block;
+  width: 100%;
+  height: 6px;
+  margin: 6px 0 9px;
+  border: 0;
+  border-radius: 6px;
+  accent-color: var(--accent);
+}
+.upload-job progress::-webkit-progress-bar {
+  background: var(--paper-soft);
+  border-radius: 6px;
+}
+.upload-job progress::-webkit-progress-value {
+  background: var(--accent, #3484cb);
+  border-radius: 6px;
+}
+.upload-job-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+  font-size: 11px;
+}
+.upload-job-status > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.upload-job-status small {
+  color: var(--muted);
+  flex-basis: 100%;
+  font-size: 10px;
+}
+.upload-job.error .upload-job-status > span {
+  color: var(--danger);
+}
+.preflight-panel {
+  margin-bottom: 20px;
+}
+.preflight-summary,
+.preflight-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.preflight-panel > p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.preflight-summary {
+  margin: 14px 0;
+  font-size: 12px;
+}
+.preflight-summary span {
+  padding: 5px 10px;
+  border-radius: var(--radius);
+  background: var(--paper-soft);
+}
+.preflight-summary .failed {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  color: var(--danger);
+}
+.preflight-list {
+  max-height: 390px;
+  overflow: auto;
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.preflight-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.preflight-item > div {
+  min-width: 0;
+  flex: 1;
+}
+.preflight-item strong,
+.preflight-item small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.preflight-item small {
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 3px;
+}
+.preflight-item .status {
+  flex: 0 0 auto;
+  text-align: right;
+  max-width: 45%;
+  font-size: 11px;
+}
+.preflight-item.failed .status {
+  color: var(--danger);
+}
+.preflight-item.ready .status {
+  color: var(--green);
+}
+.preflight-stale {
+  color: #9c630b !important;
+}
+@media (max-width: 600px) {
+  .upload-center {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .preflight-item {
+    align-items: flex-start;
+  }
+}
