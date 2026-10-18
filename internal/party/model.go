@@ -20,6 +20,7 @@ type Media struct {
 	End         float64                `json:"end"`
 	AnswerOnly  bool                   `json:"answerOnly"`
 	WarmupAudio *WarmupAudioAppearance `json:"warmupAudio,omitempty"`
+	Netease     *NeteaseSource         `json:"netease,omitempty"`
 }
 type Illustration struct {
 	ID      string  `json:"id"`

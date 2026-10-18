@@ -15,6 +15,9 @@ func ValidURL(v string) bool {
 	if v == "" {
 		return true
 	}
+	if NeteaseSongID(v) != "" {
+		return true
+	}
 	if strings.HasPrefix(v, "/assets/") || strings.HasPrefix(v, "/media/") {
 		return !strings.Contains(v, "..") && !strings.ContainsAny(v, "\r\n\\")
 	}
@@ -93,7 +96,11 @@ func validateConfig(c *Config) error {
 		if q.Points < 0 || q.Points > 1000000 || q.WrongPoints > 0 || q.WrongPoints < -1000000 || q.PlayerPoints < 0 || q.PlayerPoints > 1000000 || q.PlayerWrongPoints > 0 || q.PlayerWrongPoints < -1000000 || q.Duration < 0 || q.Duration > 86400 {
 			return fmt.Errorf("加分需 0–1000000，扣分需 -1000000–0，计时需 0–86400 秒")
 		}
-		if len(q.Title) > 2000 || len(q.Body) > 50000 || len(q.Explanation) > 50000 || len(q.Answer) > 2000 || len(q.Options) > 8 || len(q.Media) > 30 {
+		mediaLimit := 30
+		if q.Kind == "warmup" {
+			mediaLimit = 500
+		}
+		if len(q.Title) > 2000 || len(q.Body) > 50000 || len(q.Explanation) > 50000 || len(q.Answer) > 2000 || len(q.Options) > 8 || len(q.Media) > mediaLimit {
 			return fmt.Errorf("题目或素材超出大小限制")
 		}
 		if q.Kind == "choice" && q.Enabled && (len(q.Options) < 2 || len(q.Answer) != 1 || !strings.Contains("ABCDEFGH"[:len(q.Options)], q.Answer)) {
@@ -101,6 +108,11 @@ func validateConfig(c *Config) error {
 		}
 		mids := map[string]bool{}
 		for _, m := range q.Media {
+			if songID := NeteaseSongID(m.URL); m.Netease != nil || songID != "" {
+				if m.Netease == nil || songID == "" || m.Netease.SongID != songID || m.Kind != "audio" || q.Kind != "warmup" {
+					return fmt.Errorf("网易云歌曲来源与暖场音频地址不匹配")
+				}
+			}
 			if m.WarmupAudio != nil && (!ValidURL(m.WarmupAudio.Cover) || !ValidURL(m.WarmupAudio.Background)) {
 				return fmt.Errorf("素材 CD 封面或背景地址无效")
 			}

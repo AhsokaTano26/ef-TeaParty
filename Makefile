@@ -5,6 +5,7 @@ DATA ?= data
 
 install:
 	cd web && npm ci
+	cd integrations/netease && npm ci
 
 build:
 	cd web && npm run build
@@ -18,5 +19,6 @@ lan:
 
 test:
 	go test -race ./...
+	cd integrations/netease && npm test
 	cd web && npm test
 	cd web && npm run typecheck

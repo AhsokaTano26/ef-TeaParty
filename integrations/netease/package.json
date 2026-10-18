@@ -1,0 +1,8 @@
+{
+  "name": "teaparty-netease-bridge",
+  "private": true,
+  "version": "1.0.0",
+  "engines": { "node": ">=22.18.0" },
+  "scripts": { "test": "node --test bridge.test.cjs" },
+  "dependencies": { "@neteasecloudmusicapienhanced/api": "4.41.1" }
+}
