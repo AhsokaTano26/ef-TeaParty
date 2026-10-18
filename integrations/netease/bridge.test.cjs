@@ -22,4 +22,6 @@ test('playback explicitly uses account permissions without other audio sources',
  assert.equal(received.level,'standard')
  assert.equal(received.source,undefined)
  assert.equal(received.cookie,'account')
+ assert.equal(received.timeout,15000)
+ assert.equal(received.crypto,'weapi')
 })

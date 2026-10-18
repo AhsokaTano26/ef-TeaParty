@@ -172,6 +172,18 @@ export async function inspectMedia(
     controller.abort()
   }, 15000)
   try {
+    const netease = item.url.match(/^\/api\/netease\/audio\/([1-9][0-9]{0,18})$/)
+    if (netease && item.kind === 'audio') {
+      const response = await fetch('/api/admin/netease/tracks/' + netease[1] + '/availability', {
+        signal: controller.signal,
+        credentials: 'same-origin',
+        cache: 'no-store',
+      })
+      const result = await response.json()
+      return response.ok
+        ? { status: 'warning', detail: '网易云完整歌曲可获取 · 依赖网络和账号权限，需投影试播' }
+        : { status: 'failed', detail: result.error || '网易云歌曲暂时无法播放' }
+    }
     const url = new URL(item.url, location.href)
     if (!['http:', 'https:'].includes(url.protocol))
       return { status: 'failed', detail: '素材地址不是有效的 HTTP 地址' }

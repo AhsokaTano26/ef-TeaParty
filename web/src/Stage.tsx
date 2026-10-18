@@ -194,7 +194,7 @@ export function SyncedMedia({
           } else if (e.name !== 'AbortError') {
             observed.current.failed = true
             setBlocked(false)
-            setError('媒体无法播放，请检查文件或链接')
+            setError(live.m.netease ? '网易云歌曲无法播放，请检查网络或账号播放权限' : '媒体无法播放，请检查文件或链接')
           }
         })
         .finally(() => {
@@ -281,7 +281,7 @@ export function SyncedMedia({
     onError: () => {
       observed.current.failed = true
       setBlocked(false)
-      setError('媒体无法加载，请检查文件或链接')
+      setError(latest.current.m.netease ? '网易云歌曲无法加载，请主持人检查网络、登录状态与素材检查结果' : '媒体无法加载，请检查文件或链接')
       sampleStatus()
     },
     onTimeUpdate: () => {

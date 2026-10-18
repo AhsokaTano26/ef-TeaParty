@@ -10,7 +10,10 @@ function createDispatcher(sdk) {
    delete safe.proxy
    delete safe.source
    delete safe.randomCNIP
-   if(method==='song_url_v1') Object.assign(safe,{unblock:'false',level:'standard'})
+   safe.timeout=15000
+   // This SDK release defaults to xeapi, whose public key is not shipped.
+   // The same account-authorized endpoint supports weapi without extra secrets.
+   if(method==='song_url_v1') Object.assign(safe,{unblock:'false',level:'standard',crypto:'weapi'})
    const result=await sdk[method](safe)
    return {id,result:result.body}
   } catch (error) {

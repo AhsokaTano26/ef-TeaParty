@@ -91,6 +91,7 @@ export function WarmupControls({
                         </span>
                         <span className="warmup-track-name">
                           <strong>{mediaName(m, index)}</strong>
+                          {m.netease && <small>网易云音乐</small>}
                           <small
                             className={
                               playing ? 'warmup-track-status playing' : 'warmup-track-status'

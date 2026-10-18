@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   Plus,
   Upload,
@@ -33,6 +33,8 @@ import { IllustrationEditor } from './IllustrationEditor'
 import { WarmupAudioEditor } from './WarmupAudioEditor'
 import { resolveWarmupAudioAppearance } from './warmupAudioAppearance'
 import { useIllustrationEditing } from './useIllustrationEditing'
+import { mergeNeteaseMedia } from './netease'
+const NeteasePanel = lazy(() => import('./NeteasePanel').then((module) => ({ default: module.NeteasePanel })))
 export default function Bank({ state, save, onDirtyChange }: AdminProps) {
   const notice = useNotice(),
     ask = useConfirm(),
@@ -654,6 +656,23 @@ export default function Bank({ state, save, onDirtyChange }: AdminProps) {
                         setDirty(true)
                       }}
                     />
+                  )}
+                  {draft.kind === 'warmup' && (
+                    <Suspense fallback={<p>正在载入网易云音乐…</p>}>
+                    <NeteasePanel
+                      key={uploadContext}
+                      media={draft.media}
+                      onAdd={(items) => {
+                        if (currentUploadContext.current !== uploadContext) return
+                        const pageId = draft.id
+                        setDraft((current) => current?.id === pageId ? {
+                          ...current,
+                          media: mergeNeteaseMedia(current.media, items).media,
+                        } : current)
+                        setDirty(true)
+                      }}
+                    />
+                    </Suspense>
                   )}
                   <fieldset className="media-edit">
                     <legend>{draft.kind === 'warmup' ? '暖场音视频清单' : '媒体素材'}</legend>

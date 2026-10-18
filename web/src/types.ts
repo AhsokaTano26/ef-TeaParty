@@ -8,6 +8,7 @@ export interface Media {
   end: number
   answerOnly: boolean
   warmupAudio?: WarmupAudioAppearance
+  netease?: { songId: string }
 }
 export interface Question {
   id: string
