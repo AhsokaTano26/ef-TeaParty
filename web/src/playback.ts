@@ -79,7 +79,10 @@ export function timerAlertTransition(
 
 // Wake only while a visible clock can change, including its final deadline tick.
 export function startClockUntil(until: number, onTick: (now: number) => void): () => void {
-  if (until <= Date.now()) return () => {}
+  if (until <= 0) return () => {}
+  const initial = Date.now()
+  onTick(initial)
+  if (initial >= until) return () => {}
   const interval = setInterval(() => {
     const now = Date.now()
     onTick(now)

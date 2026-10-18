@@ -29,8 +29,8 @@ compression. Build now records a Vite manifest, and the build checker verifies
 that editor tabs are dynamic entries outside the projection/initial-host import
 closure and every gzip file decodes exactly to its final JS/CSS original.
 
-- Projection JS: 286,618 bytes uncompressed, 90,612 bytes with gzip (81.8% less transfer than baseline).
-- Initial host JS: 423,707 bytes uncompressed, 136,966 bytes with gzip (72.6% less transfer than baseline).
+- Projection JS: 286,603 bytes uncompressed, 90,610 bytes with gzip (81.8% less transfer than baseline).
+- Initial host JS: 423,692 bytes uncompressed, 136,967 bytes with gzip (72.6% less transfer than baseline).
 - Immutable caching applies only to existing content-addressed build assets.
   HTML and API remain uncached; HEAD and byte ranges are regression-tested.
 - Six built-in images use lossless WebP, verified identical when decoded to RGBA:
@@ -54,7 +54,12 @@ A controlled concurrent music test (host/projection/preload equivalent) reduces
 are retriable; invalidation, account changes and shutdown reject old work.
 Shared requests have a 20-second deadline and a limit of 64 in-flight song keys.
 
-Validation: Go race suite, 2 Node bridge tests, 100 frontend tests, TypeScript,
+Validation: Go race suite, 2 Node bridge tests, 102 frontend tests, TypeScript,
 production build plus manifest/gzip integrity checker. Browser access remains
 disallowed by the user, so no FCP/LCP/FPS or visual interaction claims are made.
 Original activity files and credentials were not used as test fixtures.
+
+Independent review found a clock setup boundary: an effect delayed past expiry
+could miss the final sample. The fix publishes an immediate sample on positive
+deadlines, including expiry, and adds two lifecycle/setup regression tests.
+The complete suite and production artifact checks passed again after the fix.
