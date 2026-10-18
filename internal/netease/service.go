@@ -79,7 +79,10 @@ func (s *Service) Status(ctx context.Context) (Status, error) {
 	cookie, gen := s.credential()
 	result := Status{Ready: true}
 	if cookie == "" {
-		if s.loadError != nil {
+		s.mu.Lock()
+		loadError := s.loadError
+		s.mu.Unlock()
+		if loadError != nil {
 			result.Message = "网易云账号存档无法读取，请重新扫码登录"
 		}
 		return result, nil
@@ -87,6 +90,14 @@ func (s *Service) Status(ctx context.Context) (Status, error) {
 	profile, err := s.profile(ctx, cookie)
 	if err != nil {
 		result.Message = err.Error()
+		s.mu.Lock()
+		if gen == s.generation && s.account.Cookie != "" {
+			result.LoggedIn = true
+			result.UserID = s.account.Profile.UserID
+			result.Nickname = s.account.Profile.Nickname
+			result.Avatar = s.account.Profile.Avatar
+		}
+		s.mu.Unlock()
 		return result, nil
 	}
 	s.mu.Lock()

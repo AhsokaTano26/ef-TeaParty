@@ -51,6 +51,9 @@ func TestNeteaseRoutesVisibilityRangeAndArchive(t *testing.T) {
 		return map[string]any{"code": 200, "data": []any{map[string]any{"id": p["id"], "code": 200, "url": "https://m801.music.126.net/song.mp3", "expi": 1200, "freeTrialInfo": nil}}}, nil
 	}}, filepath.Join(root, "netease"))
 	transport := musicTransport(func(r *http.Request) (*http.Response, error) {
+		if r.URL.Scheme != "https" {
+			t.Error("CDN request must use verified TLS")
+		}
 		if r.Header.Get("Cookie") != "" || r.Header.Get("Authorization") != "" {
 			t.Error("credentials forwarded to CDN")
 		}

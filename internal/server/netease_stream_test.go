@@ -39,10 +39,22 @@ func TestNeteaseCDNValidation(t *testing.T) {
 	if !publicMusicIP(net.ParseIP("1.1.1.1")) {
 		t.Fatal("public IP blocked")
 	}
+	if !musicDialIPAllowed("m801.music.126.net", net.ParseIP("198.18.0.10")) {
+		t.Fatal("HTTPS CDN cannot use the local fake-IP proxy")
+	}
+	for _, host := range []string{"localhost", "evil.test", "music.126.net.evil.test"} {
+		if musicDialIPAllowed(host, net.ParseIP("198.18.0.10")) {
+			t.Fatalf("fake-IP exception escaped CDN boundary: %s", host)
+		}
+	}
 	client := newNeteaseHTTP()
 	r := &http.Request{URL: &url.URL{Scheme: "https", Host: "127.0.0.1"}}
 	if err := client.CheckRedirect(r, []*http.Request{{}}); err == nil {
 		t.Fatal("unsafe redirect allowed")
+	}
+	down := &http.Request{URL: &url.URL{Scheme: "http", Host: "m801.music.126.net"}}
+	if err := client.CheckRedirect(down, []*http.Request{{}}); err == nil {
+		t.Fatal("CDN redirected outside TLS protection")
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()

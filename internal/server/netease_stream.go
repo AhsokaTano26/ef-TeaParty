@@ -46,6 +46,17 @@ func publicMusicIP(ip net.IP) bool {
 
 type musicConnection struct{ net.Conn }
 
+// A TUN proxy may synthesize addresses from RFC 2544's benchmark range.
+// Only known CDN hosts can use it; the transport requires HTTPS and validates
+// the CDN certificate before any HTTP request is sent.
+func musicDialIPAllowed(host string, ip net.IP) bool {
+	if publicMusicIP(ip) {
+		return true
+	}
+	address, ok := netip.AddrFromSlice(ip)
+	return ok && netip.MustParsePrefix("198.18.0.0/15").Contains(address.Unmap()) && validNeteaseCDN("https://"+host+"/")
+}
+
 func (c musicConnection) Read(p []byte) (int, error) {
 	_ = c.Conn.SetReadDeadline(time.Now().Add(30 * time.Second))
 	return c.Conn.Read(p)
@@ -63,7 +74,7 @@ func musicDial(ctx context.Context, network, address string) (net.Conn, error) {
 		return nil, &net.DNSError{Err: "no address", Name: host}
 	}
 	for _, ip := range ips {
-		if !publicMusicIP(ip.IP) {
+		if !musicDialIPAllowed(host, ip.IP) {
 			return nil, &net.AddrError{Err: "non-public music address", Addr: host}
 		}
 	}
@@ -82,7 +93,7 @@ func newNeteaseHTTP() *http.Client {
 	return &http.Client{
 		Transport: &http.Transport{DialContext: musicDial, ResponseHeaderTimeout: 15 * time.Second, TLSHandshakeTimeout: 10 * time.Second, IdleConnTimeout: 60 * time.Second, MaxIdleConns: 16, MaxConnsPerHost: 8, DisableCompression: true},
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			if len(via) >= 4 || !validNeteaseCDN(req.URL.String()) {
+			if len(via) >= 4 || req.URL.Scheme != "https" || !validNeteaseCDN(req.URL.String()) {
 				return &net.AddrError{Err: "unsupported music redirect", Addr: req.URL.Hostname()}
 			}
 			return nil
@@ -105,7 +116,11 @@ func (s *Server) neteaseAudio(w http.ResponseWriter, r *http.Request) {
 			respond(w, 502, map[string]string{"error": "网易云返回了不支持的音频地址"})
 			return
 		}
-		upstream, err := http.NewRequestWithContext(r.Context(), r.Method, stream.URL, nil)
+		// NetEase sometimes returns HTTP URLs; require TLS for the actual stream,
+		// including when system DNS is routed through a fake-IP proxy.
+		mediaURL, _ := url.Parse(stream.URL)
+		mediaURL.Scheme = "https"
+		upstream, err := http.NewRequestWithContext(r.Context(), r.Method, mediaURL.String(), nil)
 		if err != nil {
 			respond(w, 502, map[string]string{"error": "网易云音频地址无效"})
 			return

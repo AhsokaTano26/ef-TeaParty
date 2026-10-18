@@ -210,3 +210,50 @@ func TestLoginCanceledAndExpired(t *testing.T) {
 		t.Fatalf("QR expiry: %+v %v", q, err)
 	}
 }
+
+func TestStatusConcurrentWithLogout(t *testing.T) {
+	s := NewService(fixtureCaller{fn: func(_ context.Context, _ string, _ map[string]any) (any, error) {
+		return map[string]any{"ready": true}, nil
+	}}, t.TempDir())
+	s.loadError = errors.New("unreadable prior account")
+	var group sync.WaitGroup
+	group.Add(2)
+	start := make(chan struct{})
+	go func() {
+		defer group.Done()
+		<-start
+		for range 10000 {
+			_ = s.Logout()
+		}
+	}()
+	go func() {
+		defer group.Done()
+		<-start
+		for range 10000 {
+			status, err := s.Status(context.Background())
+			if err != nil || status.LoggedIn {
+				t.Errorf("logout status: %+v %v", status, err)
+			}
+		}
+	}()
+	close(start)
+	group.Wait()
+}
+
+func TestTransientStatusFailureKeepsSavedAccount(t *testing.T) {
+	dir := t.TempDir()
+	raw := []byte(`{"cookie":"MUSIC_U=saved","profile":{"userId":"42","nickname":"主持人","avatarUrl":""}}`)
+	if err := os.WriteFile(filepath.Join(dir, "account.json"), raw, 0600); err != nil {
+		t.Fatal(err)
+	}
+	s := NewService(fixtureCaller{fn: func(_ context.Context, method string, _ map[string]any) (any, error) {
+		if method == "health" {
+			return map[string]any{"ready": true}, nil
+		}
+		return nil, context.DeadlineExceeded
+	}}, dir)
+	status, err := s.Status(context.Background())
+	if err != nil || !status.LoggedIn || status.Nickname != "主持人" || status.Message == "" {
+		t.Fatalf("temporary outage lost account state: %+v %v", status, err)
+	}
+}
