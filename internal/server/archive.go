@@ -124,6 +124,9 @@ func archiveURLs(st party.State) []string {
 	return urls
 }
 func archiveExternal(v string) bool {
+	if party.NeteaseSongID(v) != "" {
+		return true
+	}
 	u, e := url.Parse(v)
 	return e == nil && (u.Scheme == "https" || u.Scheme == "http") && u.Host != "" && u.User == nil
 }

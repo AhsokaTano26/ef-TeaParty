@@ -3,6 +3,7 @@ package server
 import (
 	"crypto/sha256"
 	"crypto/subtle"
+	"ef-teaparty/internal/netease"
 	"ef-teaparty/internal/party"
 	"encoding/json"
 	"errors"
@@ -25,11 +26,22 @@ type Server struct {
 	mu                 sync.Mutex
 	sessions           map[string]time.Time
 	attempts           map[string][]time.Time
+	netease            *netease.Service
+	neteaseHTTP        *http.Client
 }
 
-func New(store *party.Store, password, media, assets, web string) http.Handler {
+type Option func(*Server)
+
+func WithNetease(service *netease.Service) Option { return func(s *Server) { s.netease = service } }
+
+func New(store *party.Store, password, media, assets, web string, options ...Option) http.Handler {
 	s := &Server{store: store, password: sha256.Sum256([]byte(password)), media: media, assets: assets, web: web, sessions: map[string]time.Time{}, attempts: map[string][]time.Time{}}
+	s.neteaseHTTP = newNeteaseHTTP()
+	for _, option := range options {
+		option(s)
+	}
 	mux := http.NewServeMux()
+	s.registerNeteaseRoutes(mux)
 	s.registerProjectionRoutes(mux)
 	s.registerArchiveRoutes(mux)
 	mux.HandleFunc("POST /api/login", s.login)
@@ -169,6 +181,9 @@ func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
 		s.mu.Lock()
 		delete(s.sessions, c.Value)
 		s.mu.Unlock()
+		if s.netease != nil {
+			s.netease.CancelOwner(c.Value)
+		}
 	}
 	http.SetCookie(w, &http.Cookie{Name: "party_session", Path: "/", HttpOnly: true, SameSite: http.SameSiteStrictMode, MaxAge: -1})
 	respond(w, 200, map[string]bool{"ok": true})
