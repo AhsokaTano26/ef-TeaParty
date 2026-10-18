@@ -3,6 +3,19 @@ import test from 'node:test'
 import { mergeNeteaseMedia, trackMedia, NeteaseTasks, musicRequest } from '../src/netease.ts'
 import { inspectMedia } from '../src/mediaPreflight.ts'
 
+test('LAN HTTP can import when randomUUID is unavailable', () => {
+  const descriptor = Object.getOwnPropertyDescriptor(crypto, 'randomUUID')
+  Object.defineProperty(crypto, 'randomUUID', { value: undefined, configurable: true })
+  try {
+    const media = trackMedia({ id: '7', name: '局域网暖场', artists: [] })
+    assert.match(media.id, /^[a-zA-Z0-9_-]{1,80}$/)
+    assert.equal(media.url, '/api/netease/audio/7')
+  } finally {
+    if (descriptor) Object.defineProperty(crypto, 'randomUUID', descriptor)
+    else delete crypto.randomUUID
+  }
+})
+
 test('NetEase tracks become stable audio with their own CD cover and UTF-8 bounded names', () => {
   const media = trackMedia({
     id: '347230',

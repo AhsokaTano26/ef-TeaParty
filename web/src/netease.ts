@@ -1,4 +1,5 @@
 import type { Media } from './types'
+import { uid } from './types.ts'
 
 export interface NeteaseStatus {
   ready: boolean
@@ -56,7 +57,7 @@ function textBytes(text: string, limit: number) {
 export function trackMedia(track: NeteaseTrack): Media {
   if (!/^[1-9][0-9]{0,18}$/.test(track.id)) throw new Error('网易云歌曲编号无效')
   return {
-    id: 'ncm_' + crypto.randomUUID().replaceAll('-', '').slice(0, 24),
+    id: 'ncm_' + uid(),
     kind: 'audio',
     name: textBytes(
       [track.name || '歌曲 ' + track.id, track.artists.join(' / ')].filter(Boolean).join(' · '),

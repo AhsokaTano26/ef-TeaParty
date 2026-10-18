@@ -257,3 +257,78 @@ func TestTransientStatusFailureKeepsSavedAccount(t *testing.T) {
 		t.Fatalf("temporary outage lost account state: %+v %v", status, err)
 	}
 }
+
+func TestAccountReplacementRejectsOldResolveAndStatus(t *testing.T) {
+	entered := make(chan struct{}, 2)
+	release := make(chan struct{})
+	var releaseOnce sync.Once
+	unblock := func() { releaseOnce.Do(func() { close(release) }) }
+	defer unblock()
+	caller := fixtureCaller{fn: func(_ context.Context, method string, p map[string]any) (any, error) {
+		cookie, _ := p["cookie"].(string)
+		switch method {
+		case "health":
+			return map[string]any{"ready": true}, nil
+		case "login_qr_key":
+			return map[string]any{"code": 200, "data": map[string]any{"unikey": "key"}}, nil
+		case "login_qr_create":
+			return map[string]any{"code": 200, "data": map[string]any{"qrimg": "data:image/png;base64,QR"}}, nil
+		case "login_qr_check":
+			return map[string]any{"code": 803, "cookie": "MUSIC_U=new"}, nil
+		case "login_status":
+			name := "新账号"
+			if cookie == "MUSIC_U=old" {
+				entered <- struct{}{}
+				<-release
+				name = "旧账号"
+			}
+			return map[string]any{"data": map[string]any{"code": 200, "profile": map[string]any{"userId": 42, "nickname": name}}}, nil
+		case "song_url_v1":
+			name := "new"
+			if cookie == "MUSIC_U=old" {
+				entered <- struct{}{}
+				<-release
+				name = "old"
+			}
+			return map[string]any{"code": 200, "data": []any{map[string]any{"id": 3, "code": 200, "url": "https://m801.music.126.net/" + name + ".mp3", "expi": 1200, "freeTrialInfo": nil}}}, nil
+		}
+		return nil, errors.New("unexpected " + method)
+	}}
+	s := NewService(caller, t.TempDir())
+	s.account = account{Cookie: "MUSIC_U=old", Profile: accountProfile{UserID: "42", Nickname: "旧账号"}}
+	q, err := s.StartLogin(context.Background(), "owner")
+	if err != nil {
+		t.Fatal(err)
+	}
+	resolved := make(chan error, 1)
+	statuses := make(chan Status, 1)
+	go func() { _, err := s.Resolve(context.Background(), "3"); resolved <- err }()
+	go func() { status, _ := s.Status(context.Background()); statuses <- status }()
+	<-entered
+	<-entered
+	authorized, err := s.CheckLogin(context.Background(), "owner", q.Task)
+	if err != nil || authorized.State != "authorized" {
+		t.Fatalf("authorize: %+v %v", authorized, err)
+	}
+	unblock()
+	if err := <-resolved; err == nil {
+		t.Error("old account stream accepted after replacement")
+	}
+	if status := <-statuses; status.Nickname == "旧账号" {
+		t.Error("old profile returned after replacement")
+	}
+	stream, err := s.Resolve(context.Background(), "3")
+	if err != nil || !strings.Contains(stream.URL, "/new.mp3") {
+		t.Fatalf("new account cache poisoned: %+v %v", stream, err)
+	}
+	s.mu.Lock()
+	profile := s.account.Profile
+	s.mu.Unlock()
+	if profile.Nickname != "新账号" {
+		t.Fatalf("new profile overwritten: %+v", profile)
+	}
+	again, err := s.CheckLogin(context.Background(), "owner", q.Task)
+	if err != nil || again.State != "authorized" {
+		t.Fatalf("authorized QR should remain readable: %+v %v", again, err)
+	}
+}

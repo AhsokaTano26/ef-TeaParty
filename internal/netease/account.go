@@ -210,6 +210,8 @@ func (s *Service) CheckLogin(ctx context.Context, owner, id string) (Login, erro
 			return Login{}, failure("storage", "无法保存网易云登录信息，请检查数据目录权限")
 		}
 		s.account = saved
+		s.generation++
+		task.generation = s.generation
 		s.loadError = nil
 		s.streams = map[string]Stream{}
 		task.State = "authorized"

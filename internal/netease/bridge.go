@@ -149,15 +149,34 @@ func (b *Bridge) Call(ctx context.Context, method string, params any, result any
 	if len(body) > 1<<20 {
 		return errors.New("网易云请求过大")
 	}
-	p.write.Lock()
-	_, err = p.input.Write(append(body, '\n'))
-	p.write.Unlock()
-	if err != nil {
-		_ = p.cmd.Process.Kill()
-		return errors.New("网易云组件连接已中断，请重试")
+	written := make(chan error, 1)
+	go func() {
+		p.write.Lock()
+		defer p.write.Unlock()
+		if err := ctx.Err(); err != nil {
+			written <- err
+			return
+		}
+		_, err := p.input.Write(append(body, '\n'))
+		written <- err
+	}()
+	select {
+	case <-ctx.Done():
+		// A blocked stdin write means this child cannot drain its queue.
+		// Closing it releases the writer and lets the next request restart.
+		b.stopProcess(p)
+		return fmt.Errorf("网易云请求取消或超时：%w", ctx.Err())
+	case err := <-written:
+		if err != nil {
+			b.stopProcess(p)
+			return errors.New("网易云组件连接已中断，请重试")
+		}
 	}
 	select {
 	case <-ctx.Done():
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			b.stopProcess(p)
+		}
 		return fmt.Errorf("网易云请求取消或超时：%w", ctx.Err())
 	case response := <-ch:
 		if response.Error != "" {
@@ -172,13 +191,23 @@ func (b *Bridge) Call(ctx context.Context, method string, params any, result any
 		return nil
 	}
 }
+func (b *Bridge) stopProcess(p *bridgeProcess) {
+	if p == nil {
+		return
+	}
+	b.mu.Lock()
+	if b.process == p {
+		b.process = nil
+	}
+	b.mu.Unlock()
+	_ = p.cmd.Process.Kill()
+	_ = p.input.Close()
+}
 func (b *Bridge) Close() error {
 	b.mu.Lock()
-	defer b.mu.Unlock()
 	b.closed = true
-	if b.process != nil {
-		b.process.input.Close()
-		return b.process.cmd.Process.Kill()
-	}
+	p := b.process
+	b.mu.Unlock()
+	b.stopProcess(p)
 	return nil
 }
