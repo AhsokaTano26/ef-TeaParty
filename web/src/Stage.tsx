@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Music2,
   Volume2,
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import type { Media, PublicState } from './types'
 import { useLive } from './api'
+import { useNow } from './useNow'
 import { fmt } from './ui'
 import { WelcomeIdentity } from './BrandLogo'
 import { mediaName } from './types'
@@ -194,7 +195,11 @@ export function SyncedMedia({
           } else if (e.name !== 'AbortError') {
             observed.current.failed = true
             setBlocked(false)
-            setError(live.m.netease ? '网易云歌曲无法播放，请检查网络或账号播放权限' : '媒体无法播放，请检查文件或链接')
+            setError(
+              live.m.netease
+                ? '网易云歌曲无法播放，请检查网络或账号播放权限'
+                : '媒体无法播放，请检查文件或链接',
+            )
           }
         })
         .finally(() => {
@@ -281,7 +286,11 @@ export function SyncedMedia({
     onError: () => {
       observed.current.failed = true
       setBlocked(false)
-      setError(latest.current.m.netease ? '网易云歌曲无法加载，请主持人检查网络、登录状态与素材检查结果' : '媒体无法加载，请检查文件或链接')
+      setError(
+        latest.current.m.netease
+          ? '网易云歌曲无法加载，请主持人检查网络、登录状态与素材检查结果'
+          : '媒体无法加载，请检查文件或链接',
+      )
       sampleStatus()
     },
     onTimeUpdate: () => {
@@ -368,7 +377,7 @@ export function SyncedMedia({
   )
 }
 
-export function Stage({
+export const Stage = memo(function Stage({
   data,
   playback = false,
   muted = false,
@@ -386,18 +395,14 @@ export function Stage({
   illustrationEditing?: IllustrationEditing
 }) {
   const q = data.question
-  const [now, setNow] = useState(Date.now()),
-    [badImage, setBadImage] = useState<string[]>([]),
+  const [badImage, setBadImage] = useState<string[]>([]),
     [alertError, setAlertError] = useState('')
   const alert = useRef({ deadline: 0, armed: false, questionId: q?.id })
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 200)
-    return () => clearInterval(id)
-  }, [])
   const offset = useMemo(
     () => data.clockOffset ?? Date.now() - data.serverTime,
     [data.clockOffset, data.serverTime],
   )
+  const now = useNow(data.session.timer.deadline ? data.session.timer.deadline + offset : 0)
   const timer = data.session.timer,
     remaining = timer.deadline
       ? Math.max(0, Math.ceil((timer.deadline - now + offset) / 1000))
@@ -689,7 +694,7 @@ export function Stage({
       {alertError && <div className="stage-alert-error">{alertError}</div>}
     </div>
   )
-}
+})
 
 export default function Projection() {
   const live = useLive<PublicState>('/api'),

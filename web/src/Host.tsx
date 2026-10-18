@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -24,22 +24,30 @@ import { Select } from './Controls'
 import { WarmupControls } from './WarmupControls'
 import { TimerControls } from './TimerControls'
 import { playbackTiming } from './playback'
+import { useNow } from './useNow'
 import { unlockTimerSound, stopTimerSound } from './timerSound'
 import { Empty } from './ui'
 import { ProjectionStatusPanel } from './ProjectionStatusPanel'
 import type { MediaObservation } from './projectionStatus'
 import { VideoPlaybackControls } from './VideoPlaybackControls'
 export default function Host({ state, action }: AdminProps) {
-  const q = state.config.questions.find((v) => v.id === state.session.currentId),
-    data = publicView(state),
-    enabled = state.config.questions.filter((v) => v.enabled)
+  const q = useMemo(
+      () => state.config.questions.find((v) => v.id === state.session.currentId),
+      [state.config.questions, state.session.currentId],
+    ),
+    enabled = useMemo(
+      () => state.config.questions.filter((v) => v.enabled),
+      [state.config.questions],
+    )
   const sections = [...new Set(enabled.map((v) => v.section || '自定义'))],
     selected = sections.indexOf(q?.section || '自定义')
   const [team, setTeam] = useState(state.config.teams[0]?.id || ''),
     [player, setPlayer] = useState(''),
     [sound, setSound] = useState(false),
-    [now, setNow] = useState(Date.now()),
-    [previewMedia, setPreviewMedia] = useState<MediaObservation | null>(null)
+    [previewMedia, setPreviewMedia] = useState<Pick<
+      MediaObservation,
+      'questionId' | 'id' | 'duration'
+    > | null>(null)
   const av = (q?.media || []).filter(
       (m) => m.kind !== 'image' && (!m.answerOnly || state.session.revealed),
     ),
@@ -47,7 +55,51 @@ export default function Host({ state, action }: AdminProps) {
     isQuestion = q && q.kind !== 'warmup' && q.kind !== 'intro' && q.kind !== 'score'
   const score = state.scores.find((v) => v.teamId === team && v.questionId === q?.id),
     timer = state.session.timer
-  const serverNow = now - (state.clockOffset ?? 0)
+  const offset = state.clockOffset ?? 0
+  const drawDeadline =
+    state.session.lotteryVisible && !state.session.lotteryIntro
+      ? state.draws.at(-1)?.revealAt || 0
+      : 0
+  const mediaDeadline =
+    media && state.session.media.status === 'playing'
+      ? media.kind === 'video'
+        ? Infinity
+        : state.session.media.updatedAt + offset
+      : 0
+  const now = useNow(
+    Math.max(
+      timer.deadline ? timer.deadline + offset : 0,
+      mediaDeadline,
+      drawDeadline ? drawDeadline + offset : 0,
+    ),
+  )
+  const serverNow = now - offset
+  const drawReady = drawDeadline > 0 && serverNow >= drawDeadline
+  const data = useMemo(() => publicView(state), [state, drawReady])
+  const onMediaStatus = useCallback((status: MediaObservation | null) => {
+    setPreviewMedia((previous) => {
+      if (!status) return previous === null ? previous : null
+      if (
+        previous?.questionId === status.questionId &&
+        previous.id === status.id &&
+        previous.duration === status.duration
+      )
+        return previous
+      return { questionId: status.questionId, id: status.id, duration: status.duration }
+    })
+  }, [])
+  const onPreviewStop = useCallback(
+    (position: number) => {
+      void action({
+        op: 'pause',
+        id: q?.id,
+        seq: state.session.media.seq,
+        index: state.session.media.index,
+        position,
+      })
+    },
+    [action, q?.id, state.session.media.seq, state.session.media.index],
+  )
   const mediaTiming = playbackTiming(state.session.media, serverNow)
   const mediaDuration =
     previewMedia?.questionId === q?.id && previewMedia?.id === media?.id
@@ -57,10 +109,6 @@ export default function Host({ state, action }: AdminProps) {
     media?.kind === 'video' &&
     mediaDuration > 0 &&
     mediaTiming.position >= Math.min(media.end || Infinity, mediaDuration)
-  useEffect(() => {
-    const i = setInterval(() => setNow(Date.now()), 200)
-    return () => clearInterval(i)
-  }, [])
   useEffect(() => {
     if (!state.config.teams.some((t) => t.id === team)) setTeam(state.config.teams[0]?.id || '')
   }, [state.config.teams, team])
@@ -127,16 +175,8 @@ export default function Host({ state, action }: AdminProps) {
                 data={data}
                 playback
                 muted={!sound}
-                onMediaStatus={setPreviewMedia}
-                onStop={(p) =>
-                  void action({
-                    op: 'pause',
-                    id: q?.id,
-                    seq: state.session.media.seq,
-                    index: state.session.media.index,
-                    position: p,
-                  })
-                }
+                onMediaStatus={onMediaStatus}
+                onStop={onPreviewStop}
               />
             </div>
             <div className="preview-caption">

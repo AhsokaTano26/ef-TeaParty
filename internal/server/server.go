@@ -71,13 +71,14 @@ func New(store *party.Store, password, media, assets, web string, options ...Opt
 		}
 		http.StripPrefix("/assets/", http.FileServer(http.Dir(assets))).ServeHTTP(w, r)
 	}))
+	webFiles := staticFiles(web)
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, "/api/") {
 			http.NotFound(w, r)
 			return
 		}
 		if r.URL.Path != "/" && r.URL.Path != "/stage" {
-			http.FileServer(http.Dir(web)).ServeHTTP(w, r)
+			webFiles.ServeHTTP(w, r)
 			return
 		}
 		w.Header().Set("Cache-Control", "no-store")
@@ -227,9 +228,11 @@ func (s *Server) events(w http.ResponseWriter, r *http.Request, admin bool) {
 	w.Header().Set("X-Accel-Buffering", "no")
 	w.Header().Set("Cache-Control", "no-cache")
 	send := func() bool {
-		var v any = s.store.Public()
+		var v any
 		if admin {
 			v = s.store.Snapshot()
+		} else {
+			v = s.store.Public()
 		}
 		b, e := json.Marshal(v)
 		if e != nil {

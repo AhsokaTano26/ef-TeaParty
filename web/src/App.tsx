@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import {
   Monitor,
   Library,
@@ -18,10 +18,10 @@ import { Notices, useNotice, Confirmations, useConfirm } from './ui'
 import { clearEditorDraft } from './editorDraft'
 import type { Action, Config, State } from './types'
 import Host from './Host'
-import Bank from './Bank'
-import Scores from './Scores'
-import Lottery from './Lottery'
-import Setup from './Setup'
+const Bank = lazy(() => import('./Bank'))
+const Scores = lazy(() => import('./Scores'))
+const Lottery = lazy(() => import('./Lottery'))
+const Setup = lazy(() => import('./Setup'))
 import { BrandLogo } from './BrandLogo'
 import { UploadCenter } from './UploadCenter'
 export type AdminProps = {
@@ -199,7 +199,13 @@ function Admin() {
       </div>
     )
   const item = nav.find((v) => v.id === page)!,
-    props = { state: live.state, action: run, save, onDirtyChange: setBankDirty, onRestored: live.setState }
+    props = {
+      state: live.state,
+      action: run,
+      save,
+      onDirtyChange: setBankDirty,
+      onRestored: live.setState,
+    }
   const logout = async () => {
     if (
       bankDirty &&
@@ -340,17 +346,19 @@ function Admin() {
             <button onClick={live.reload}>重连</button>
           </div>
         )}
-        {page === 'host' ? (
-          <Host {...props} />
-        ) : page === 'bank' ? (
-          <Bank {...props} />
-        ) : page === 'scores' ? (
-          <Scores {...props} />
-        ) : page === 'lottery' ? (
-          <Lottery {...props} />
-        ) : (
-          <Setup {...props} />
-        )}
+        <Suspense fallback={<div className="loading-screen">正在加载…</div>}>
+          {page === 'host' ? (
+            <Host {...props} />
+          ) : page === 'bank' ? (
+            <Bank {...props} />
+          ) : page === 'scores' ? (
+            <Scores {...props} />
+          ) : page === 'lottery' ? (
+            <Lottery {...props} />
+          ) : (
+            <Setup {...props} />
+          )}
+        </Suspense>
       </main>
     </div>
   )

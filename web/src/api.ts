@@ -69,7 +69,9 @@ export function useLive<T extends { revision: number; serverTime?: number; clock
         ) {
           clock.current = { ...measured, sampledAt: receivedAt }
           commitState((previous) =>
-            previous ? { ...previous, clockOffset: measured.offset } : previous,
+            previous && previous.clockOffset !== measured.offset
+              ? { ...previous, clockOffset: measured.offset }
+              : previous,
           )
         }
       } catch {

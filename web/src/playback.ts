@@ -1,10 +1,18 @@
 import type { Session } from './types'
 
-export function acceptLiveState<T extends { revision: number }>(
-  previous: T | null,
-  incoming: T,
-): T {
-  return previous && incoming.revision < previous.revision ? previous : incoming
+export function acceptLiveState<
+  T extends { revision: number; configRevision?: number; config?: unknown },
+>(previous: T | null, incoming: T): T {
+  if (previous && incoming.revision < previous.revision) return previous
+  if (
+    previous &&
+    typeof incoming.configRevision === 'number' &&
+    incoming.configRevision === previous.configRevision &&
+    previous.config &&
+    incoming.config
+  )
+    return { ...incoming, config: previous.config }
+  return incoming
 }
 
 export function serverClockSample(serverTime: number, sentAt: number, receivedAt: number) {
@@ -67,4 +75,15 @@ export function timerAlertTransition(
   if (deadline <= 0) return { deadline: 0, armed: false, alert: false }
   if (now < deadline) return { deadline, armed: true, alert: false }
   return { deadline, armed: false, alert: previous.deadline === deadline && previous.armed }
+}
+
+// Wake only while a visible clock can change, including its final deadline tick.
+export function startClockUntil(until: number, onTick: (now: number) => void): () => void {
+  if (until <= Date.now()) return () => {}
+  const interval = setInterval(() => {
+    const now = Date.now()
+    onTick(now)
+    if (now >= until) clearInterval(interval)
+  }, 200)
+  return () => clearInterval(interval)
 }

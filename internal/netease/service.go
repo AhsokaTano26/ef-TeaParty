@@ -16,16 +16,24 @@ type Service struct {
 	generation uint64
 	tasks      map[string]*loginTask
 	streams    map[string]Stream
+	flights    map[streamKey]*streamFlight
+	closed     bool
 	now        func() time.Time
 	loadError  error
 }
 
 func NewService(caller Caller, dir string) *Service {
-	s := &Service{caller: caller, dir: dir, tasks: map[string]*loginTask{}, streams: map[string]Stream{}, now: time.Now}
+	s := &Service{caller: caller, dir: dir, tasks: map[string]*loginTask{}, streams: map[string]Stream{}, flights: map[streamKey]*streamFlight{}, now: time.Now}
 	s.loadError = s.loadAccount()
 	return s
 }
-func (s *Service) Close() error { return s.caller.Close() }
+func (s *Service) Close() error {
+	s.mu.Lock()
+	s.closed = true
+	s.cancelFlightsLocked()
+	s.mu.Unlock()
+	return s.caller.Close()
+}
 func (s *Service) credential() (string, uint64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -112,17 +120,95 @@ func (s *Service) Status(ctx context.Context) (Status, error) {
 	s.account.Profile = profile
 	return result, nil
 }
+
+type streamKey struct {
+	id         string
+	generation uint64
+}
+
+type streamFlight struct {
+	done   chan struct{}
+	cancel context.CancelFunc
+	stream Stream
+	err    error
+}
+
+// Identical host/projection/preload requests share one bounded upstream call.
+// Each caller can stop waiting without cancelling playback for another screen.
 func (s *Service) Resolve(ctx context.Context, id string) (Stream, error) {
 	if !validID(id) {
 		return Stream{}, failure("invalid", "歌曲编号无效")
 	}
-	cookie, gen := s.credential()
+	if err := ctx.Err(); err != nil {
+		return Stream{}, err
+	}
 	s.mu.Lock()
+	if s.closed {
+		s.mu.Unlock()
+		return Stream{}, failure("unavailable", "网易云服务已停止")
+	}
+	cookie, gen := s.account.Cookie, s.generation
 	cached, ok := s.streams[id]
-	s.mu.Unlock()
 	if ok && cached.generation == gen && cached.ExpiresAt > s.now().Add(30*time.Second).UnixMilli() {
+		s.mu.Unlock()
 		return cached, nil
 	}
+	key := streamKey{id, gen}
+	flight := s.flights[key]
+	if flight == nil {
+		if len(s.flights) >= 64 {
+			s.mu.Unlock()
+			return Stream{}, failure("unavailable", "网易云请求较多，请稍后重试")
+		}
+		shared, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+		flight = &streamFlight{done: make(chan struct{}), cancel: cancel}
+		s.flights[key] = flight
+		go s.resolveFlight(shared, key, cookie, flight)
+	}
+	s.mu.Unlock()
+	select {
+	case <-ctx.Done():
+		return Stream{}, ctx.Err()
+	case <-flight.done:
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		if gen != s.generation {
+			return Stream{}, failure("login", "网易云账号状态已变化，请重试")
+		}
+		return flight.stream, flight.err
+	}
+}
+
+func (s *Service) resolveFlight(ctx context.Context, key streamKey, cookie string, flight *streamFlight) {
+	defer flight.cancel()
+	stream, err := s.resolveStream(ctx, key.id, cookie, key.generation)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if key.generation != s.generation {
+		stream, err = Stream{}, failure("login", "网易云账号状态已变化，请重试")
+	} else if s.closed || s.flights[key] != flight {
+		stream, err = Stream{}, failure("unavailable", "播放信息已失效，请重试")
+	} else if err == nil {
+		if len(s.streams) >= 512 {
+			s.streams = map[string]Stream{}
+		}
+		s.streams[key.id] = stream
+	}
+	if s.flights[key] == flight {
+		delete(s.flights, key)
+	}
+	flight.stream, flight.err = stream, err
+	close(flight.done)
+}
+
+func (s *Service) cancelFlightsLocked() {
+	for key, flight := range s.flights {
+		delete(s.flights, key)
+		flight.cancel()
+	}
+}
+
+func (s *Service) resolveStream(ctx context.Context, id, cookie string, gen uint64) (Stream, error) {
 	var response struct {
 		Data []struct {
 			ID            ID              `json:"id"`
@@ -154,15 +240,16 @@ func (s *Service) Resolve(ctx context.Context, id string) (Stream, error) {
 		expi = 1200
 	}
 	stream := Stream{URL: item.URL, ExpiresAt: s.now().Add(time.Duration(expi) * time.Second).UnixMilli(), generation: gen}
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if gen != s.generation {
-		return Stream{}, failure("login", "网易云账号状态已变化，请重试")
-	}
-	if len(s.streams) >= 512 {
-		s.streams = map[string]Stream{}
-	}
-	s.streams[id] = stream
 	return stream, nil
 }
-func (s *Service) Invalidate(id string) { s.mu.Lock(); delete(s.streams, id); s.mu.Unlock() }
+func (s *Service) Invalidate(id string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.streams, id)
+	for key, flight := range s.flights {
+		if key.id == id {
+			delete(s.flights, key)
+			flight.cancel()
+		}
+	}
+}

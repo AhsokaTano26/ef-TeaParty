@@ -1,5 +1,5 @@
-import logo from './assets/cqu-ouyan-logo-transparent.png'
-import universityLogo from './assets/cqulogo.png'
+import logo from './assets/cqu-ouyan-logo-transparent.webp'
+import universityLogo from './assets/cqulogo.webp'
 
 export function BrandLogo({ className = '' }: { className?: string }) {
   return (

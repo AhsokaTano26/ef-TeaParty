@@ -106,6 +106,7 @@ func (s *Service) expire(cookie string) {
 	s.generation++
 	s.tasks = map[string]*loginTask{}
 	s.streams = map[string]Stream{}
+	s.cancelFlightsLocked()
 }
 func (s *Service) StartLogin(ctx context.Context, owner string) (Login, error) {
 	if owner == "" {
@@ -116,6 +117,7 @@ func (s *Service) StartLogin(ctx context.Context, owner string) (Login, error) {
 	generation := s.generation
 	s.tasks = map[string]*loginTask{}
 	s.streams = map[string]Stream{}
+	s.cancelFlightsLocked()
 	s.mu.Unlock()
 	var key struct {
 		Data struct {
@@ -214,6 +216,7 @@ func (s *Service) CheckLogin(ctx context.Context, owner, id string) (Login, erro
 		task.generation = s.generation
 		s.loadError = nil
 		s.streams = map[string]Stream{}
+		s.cancelFlightsLocked()
 		task.State = "authorized"
 	default:
 		return Login{}, failure("upstream", "网易云登录状态异常，请刷新二维码")
@@ -275,5 +278,6 @@ func (s *Service) Logout() error {
 	s.generation++
 	s.tasks = map[string]*loginTask{}
 	s.streams = map[string]Stream{}
+	s.cancelFlightsLocked()
 	return nil
 }

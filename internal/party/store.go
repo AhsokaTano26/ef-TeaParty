@@ -77,6 +77,7 @@ func Open(path string, seed Config) (*Store, error) {
 	if !os.IsNotExist(err) {
 		return nil, err
 	}
+	seed = cloneConfig(seed)
 	if err = validateConfig(&seed); err != nil {
 		return nil, err
 	}
@@ -137,12 +138,6 @@ func addWarmupBeforeWelcome(cfg *Config) bool {
 	copy(cfg.Questions[welcome+1:], cfg.Questions[welcome:])
 	cfg.Questions[welcome] = q
 	return true
-}
-func clone(s State) State {
-	b, _ := json.Marshal(s)
-	var out State
-	_ = json.Unmarshal(b, &out)
-	return out
 }
 func (s *Store) Snapshot() State {
 	s.mu.RLock()
@@ -222,6 +217,7 @@ func (s *Store) Configure(cfg Config, revision int64) error {
 	if revision != 0 && revision != s.state.ConfigRevision {
 		return fmt.Errorf("题库已在其他窗口修改，请重新载入后再保存")
 	}
+	cfg = cloneConfig(cfg)
 	if err := validateConfig(&cfg); err != nil {
 		return err
 	}
@@ -257,11 +253,18 @@ func (s *Store) Configure(cfg Config, revision int64) error {
 	return s.commit(st)
 }
 func (s *Store) Public() PublicState {
-	st := s.Snapshot()
-	p := PublicState{Settings: st.Config.Settings, Teams: []PublicTeam{}, Session: st.Session, Revision: st.Revision, ServerTime: time.Now().UnixMilli()}
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	st := s.state
+	now := time.Now().UnixMilli()
+	p := PublicState{Settings: st.Config.Settings, Teams: []PublicTeam{}, Session: st.Session, Revision: st.Revision, ServerTime: now}
 	p.Preload = nextPreloadPlan(st)
+	scores := make(map[string]int, len(st.Config.Teams))
+	for _, score := range st.Scores {
+		scores[score.TeamID] += score.Delta
+	}
 	for _, t := range st.Config.Teams {
-		p.Teams = append(p.Teams, PublicTeam{t, st.TeamScore(t.ID)})
+		p.Teams = append(p.Teams, PublicTeam{t, scores[t.ID]})
 	}
 	for _, q := range st.Config.Questions {
 		if q.Enabled {
@@ -271,7 +274,9 @@ func (s *Store) Public() PublicState {
 			}
 		}
 	}
-	if q := st.Current(); q != nil {
+	if current := st.Current(); current != nil {
+		owned := cloneQuestion(*current)
+		q := &owned
 		q.Source = ""
 		q.Review = ""
 		if !st.Session.Revealed {
@@ -287,10 +292,11 @@ func (s *Store) Public() PublicState {
 		q.Media = m
 		p.Question = q
 	}
-	p.Lottery = lotteryPresentation(st, time.Now().UnixMilli())
+	p.Lottery = lotteryPresentation(st, now)
 	if st.Session.LotteryVisible && !st.Session.LotteryIntro && len(st.Draws) > 0 {
 		d := st.Draws[len(st.Draws)-1]
-		if d.RevealAt <= time.Now().UnixMilli() {
+		if d.RevealAt <= now {
+			d.Values = append([]string(nil), d.Values...)
 			p.Draw = &d
 		}
 	}

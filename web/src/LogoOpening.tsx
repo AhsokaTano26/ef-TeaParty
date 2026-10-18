@@ -1,8 +1,8 @@
 import { memo, useLayoutEffect, useRef, type CSSProperties } from 'react'
-import ouyan from './assets/logo/cquod.png'
-import lovelive from './assets/logo/cqulovelive.png'
-import bandori from './assets/logo/cqubgd.png'
-import tgtg from './assets/logo/cqutgtg.png'
+import ouyan from './assets/logo/cquod.webp'
+import lovelive from './assets/logo/cqulovelive.webp'
+import bandori from './assets/logo/cqubgd.webp'
+import tgtg from './assets/logo/cqutgtg.webp'
 import './logo-opening.css'
 
 const logos = [
