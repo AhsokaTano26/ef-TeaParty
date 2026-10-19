@@ -1,8 +1,9 @@
 # Built-in image assets
 
 UI imports use lossless WebP derivatives. Keep the original PNGs as source assets.
-Reproduce each derivative with `cwebp -lossless -exact -m 6 source.png -o source.webp`.
-The `-exact` flag preserves RGB even underneath fully transparent pixels.
+Reproduce each derivative with `cwebp -lossless -exact -metadata icc -m 6 source.png -o source.webp`.
+The `-exact` flag preserves RGB even underneath fully transparent pixels;
+`-metadata icc` retains the original color profile when present.
 
 Verified during the performance update: decode each source and derivative to RGBA
 with FFmpeg and compare SHA-256 hashes. All six images decoded identically.

@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -100,6 +101,10 @@ func TestStaticAssetEncodingAndCache(t *testing.T) {
 	h.ServeHTTP(head, r)
 	if head.Header().Get("Content-Encoding") != "gzip" || head.Body.Len() != 0 {
 		t.Fatal("encoded HEAD")
+	}
+
+	if head.Header().Get("Content-Length") != strconv.Itoa(compressed.Len()) {
+		t.Fatalf("encoded HEAD length: %q, want %d", head.Header().Get("Content-Length"), compressed.Len())
 	}
 	for _, path := range []string{"/", "/stage", "/api/state", "/plain.js", "/assets/missing-Abc123_x.js"} {
 		w := httptest.NewRecorder()

@@ -30,18 +30,18 @@ that editor tabs are dynamic entries outside the projection/initial-host import
 closure and every gzip file decodes exactly to its final JS/CSS original.
 
 - Projection JS: 286,603 bytes uncompressed, 90,610 bytes with gzip (81.8% less transfer than baseline).
-- Initial host JS: 423,692 bytes uncompressed, 136,967 bytes with gzip (72.6% less transfer than baseline).
+- Initial host JS: 423,692 bytes uncompressed, 136,969 bytes with gzip (72.6% less transfer than baseline).
 - Immutable caching applies only to existing content-addressed build assets.
   HTML and API remain uncached; HEAD and byte ranges are regression-tested.
-- Six built-in images use lossless WebP, verified identical when decoded to RGBA:
+- Six built-in images use lossless WebP, verified identical when decoded to RGBA; embedded ICC color profile retained:
   - `web/src/assets/cqulogo.png`: 81,483 → 30,930 bytes.
   - `web/src/assets/cqu-ouyan-logo-transparent.png`: 807,647 → 451,336 bytes.
-  - `web/src/assets/logo/cqutgtg.png`: 488,021 → 303,130 bytes.
+  - `web/src/assets/logo/cqutgtg.png`: 488,021 → 306,300 bytes.
   - `web/src/assets/logo/cqubgd.png`: 360,758 → 184,126 bytes.
   - `web/src/assets/logo/cqulovelive.png`: 1,157,765 → 715,306 bytes.
   - `web/src/assets/logo/cquod.png`: 587,598 → 362,760 bytes.
 
-Used image total: 3,483,272 → 2,047,588 bytes.
+Used image total: 3,483,272 → 2,050,758 bytes.
 
 Idle host/projection clocks schedule no periodic updates. Active clocks retain
 their 200ms cadence and stop on expiry; media sync retains its separate 100ms
@@ -63,3 +63,5 @@ Independent review found a clock setup boundary: an effect delayed past expiry
 could miss the final sample. The fix publishes an immediate sample on positive
 deadlines, including expiry, and adds two lifecycle/setup regression tests.
 The complete suite and production artifact checks passed again after the fix.
+
+Real HTTP smoke checks also verify the compressed HEAD content length, private/public state, authenticated SSE, media ranges and reveal behavior using a temporary synthetic activity.

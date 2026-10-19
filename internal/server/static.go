@@ -62,6 +62,7 @@ func staticFiles(root string) http.Handler {
 				defer f.Close()
 				if compressed, err := f.Stat(); err == nil && compressed.Mode().IsRegular() {
 					w.Header().Set("Content-Encoding", "gzip")
+					w.Header().Set("Content-Length", strconv.FormatInt(compressed.Size(), 10))
 					w.Header().Set("Content-Type", mime.TypeByExtension(filepath.Ext(filename)))
 					http.ServeContent(w, r, info.Name(), info.ModTime(), f)
 					return

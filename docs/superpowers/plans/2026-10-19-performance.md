@@ -66,4 +66,4 @@
 
 - [x] Run complete make test/build, comparative benchmarks and compressed asset smoke checks on temporary fixtures.
 - [x] Request independent whole-diff review; fix material findings with regression tests.
-- [ ] Save measurements/limitations, commit and integrate locally per the user's existing local-main preference; no push.
+- [x] Save measurements/limitations, commit and integrate locally per the user's existing local-main preference; no push.
